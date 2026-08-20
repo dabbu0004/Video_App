@@ -15,7 +15,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext } from '../contexts/AuthContext';
 import { Snackbar } from '@mui/material';
 
-
+// Import CircularProgress
+import {CircularProgress } from '@mui/material';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
@@ -30,6 +31,7 @@ export default function Authentication() {
     const [name, setName] = React.useState();
     const [error, setError] = React.useState();
     const [message, setMessage] = React.useState();
+    const [loading, setLoading] = React.useState(false); // Add this
 
 
     const [formState, setFormState] = React.useState(0);
@@ -69,6 +71,7 @@ export default function Authentication() {
     // }
 
     let handleAuth = async () => {
+        setLoading(true); // Start loader
         setError("");
         try {
             let result; // Declare result here
@@ -98,6 +101,8 @@ export default function Authentication() {
             console.log(err);
             let message = err?.response?.data?.message || err?.message || "An error occurred";
             setError(message);
+        }finally {
+            setLoading(false); // Stop loader
         }
     };
 
@@ -184,15 +189,16 @@ export default function Authentication() {
 
                             <p style={{ color: "red" }}>{error}</p>
 
-                            <Button
-                                type="button"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                onClick={handleAuth}
-                            >
-                                {formState === 0 ? "Login " : "Register"}
-                            </Button>
+                          <Button
+            type="button"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={handleAuth}
+            disabled={loading}
+        >
+            {loading ? <CircularProgress size={24} color="inherit" /> : (formState === 0 ? "Login " : "Register")}
+        </Button>
 
                         </Box>
                     </Box>

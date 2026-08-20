@@ -1,27 +1,29 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
-const withAuth = (WrappedComponent ) => {
+const withAuth = (WrappedComponent) => {
     const AuthComponent = (props) => {
         const router = useNavigate();
 
         const isAuthenticated = () => {
-            if(localStorage.getItem("token")) {
-                return true;
-            } 
-            return false;
-        }
+            return !!localStorage.getItem("token");
+        };
 
         useEffect(() => {
-            if(!isAuthenticated()) {
-                router("/auth")
+            if (!isAuthenticated()) {
+                router("/auth");
             }
-        }, [])
+        }, [router]);
 
-        return <WrappedComponent {...props} />
-    }
+        // FIXED: Do not render the protected component at all if no token exists
+        if (!isAuthenticated()) {
+            return null; 
+        }
+
+        return <WrappedComponent {...props} />;
+    };
 
     return AuthComponent;
-}
+};
 
 export default withAuth;
